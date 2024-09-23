@@ -14,6 +14,7 @@ class VerifyCsrfToken extends Middleware
     protected $except = [
         // Add the route here
         'order-notification',
-        '/'
+        '/',
+        '/api/*',
     ];
 }
