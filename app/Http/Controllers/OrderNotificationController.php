@@ -10,6 +10,7 @@ class OrderNotificationController extends Controller
 {
     public function receiveNotification(Request $request): \Illuminate\Http\JsonResponse
     {
+        Log::info('Order Notification Received From GEMIVO:', $request->all());
         // Initialize fields with default values
         $orderId = '';
         $created = '';
