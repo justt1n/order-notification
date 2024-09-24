@@ -25,6 +25,10 @@ class OrderNotificationController extends Controller
         }
         if ($request->has('products_sold')) {
             $productsSold = $request->input('products_sold');
+            //check length of products sold
+            if (count($productsSold) == 0) {
+                $this->sendNoti($orderId, $created);
+            }
         }
 
         // Log the received order notification for debugging purposes
@@ -71,6 +75,31 @@ class OrderNotificationController extends Controller
         return response()->json(['status' => 'success'], 200);
     }
 
+
+    private function sendNoti($orderId, $created)
+    {
+        $webhookUrl = env('DISCORD_WEBHOOK_URL'); // Ensure this is set in your .env file
+    
+        // Create a message for Discord
+        $message = "💰 **New Top-Up Order**:\n";
+        $message .= "A new top-up order has been received! 🎉\n";
+        $message .= "Order ID: {$orderId}\n";
+        $message .= "Created At: {$created}\n";
+        $message .= "Please check the orders for details.: https://www.gamivo.com/seller/history";
+
+        // Send the message to Discord using HTTP POST
+        // Uncomment the following line in production
+        // Http::post($webhookUrl, [
+        //     'content' => $message,
+        // ]);
+
+        // For debugging, send to a test webhook
+        $debugHook = "https://discord.com/api/webhooks/1284773361607512114/yTQv2F1jg1c7AEKG5FFeZ4qDlnY3pnTeDbhilAlfnZA9zddf1kgsV2R_yPZsVP0Q_Kjh";
+        Http::post($debugHook, [
+            'content' => $message,
+        ]);
+    }
+
     private function sendToDiscord($orderId, $created, $productId, $productName, $quantity, $userData, $keyIds)
     {
         $webhookUrl = env('DISCORD_WEBHOOK_URL'); // Ensure this is set in your .env file
@@ -91,9 +120,9 @@ class OrderNotificationController extends Controller
         $message .= "🔑 **Key IDs Sold**: " . implode(', ', $keyIds) . "\n";
 
         // Send the message to Discord using HTTP POST
-        Http::post($webhookUrl, [
-            'content' => $message,
-        ]);
+        // Http::post($webhookUrl, [
+        //     'content' => $message,
+        // ]);
         $debugHook = "https://discord.com/api/webhooks/1284773361607512114/yTQv2F1jg1c7AEKG5FFeZ4qDlnY3pnTeDbhilAlfnZA9zddf1kgsV2R_yPZsVP0Q_Kjh";
         Http::post($debugHook, [
             'content' => $message,
