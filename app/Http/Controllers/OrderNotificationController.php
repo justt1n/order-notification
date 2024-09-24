@@ -10,7 +10,14 @@ class OrderNotificationController extends Controller
 {
     public function receiveNotification(Request $request): \Illuminate\Http\JsonResponse
     {
-        Log::info('Order Notification Received From GEMIVO:', $request->all());
+        Log::info('Order Notification Received From GEMIVO:', [$request->getContent()]);
+        Log::info('Content-Type:', [$request->header('Content-Type')]);
+        if ($request->all() == null) {
+            Log::info('Request is empty');
+            //get current time
+            $current_time = date('Y-m-d H:i:s');
+            $this->sendNoti('New order', $current_time);
+        }
         // Initialize fields with default values
         $orderId = '';
         $created = '';
@@ -30,7 +37,7 @@ class OrderNotificationController extends Controller
                 $this->sendNoti($orderId, $created);
             }
         }
-
+        Log::info('END Order Notification Received From GEMIVO:', [$orderId, $created, $productsSold]);
         // Log the received order notification for debugging purposes
         Log::info('Order Notification Received', ['order_id' => $orderId, 'created' => $created, 'products_sold' => $productsSold]);
 
@@ -89,9 +96,9 @@ class OrderNotificationController extends Controller
 
         // Send the message to Discord using HTTP POST
         // Uncomment the following line in production
-        Http::post($webhookUrl, [
-            'content' => $message,
-        ]);
+        // Http::post($webhookUrl, [
+        //     'content' => $message,
+        // ]);
 
         // For debugging, send to a test webhook
         $debugHook = "https://discord.com/api/webhooks/1284773361607512114/yTQv2F1jg1c7AEKG5FFeZ4qDlnY3pnTeDbhilAlfnZA9zddf1kgsV2R_yPZsVP0Q_Kjh";
@@ -120,9 +127,9 @@ class OrderNotificationController extends Controller
         $message .= "🔑 **Key IDs Sold**: " . implode(', ', $keyIds) . "\n";
 
         // Send the message to Discord using HTTP POST
-        Http::post($webhookUrl, [
-            'content' => $message,
-        ]);
+        // Http::post($webhookUrl, [
+        //     'content' => $message,
+        // ]);
         $debugHook = "https://discord.com/api/webhooks/1284773361607512114/yTQv2F1jg1c7AEKG5FFeZ4qDlnY3pnTeDbhilAlfnZA9zddf1kgsV2R_yPZsVP0Q_Kjh";
         Http::post($debugHook, [
             'content' => $message,
