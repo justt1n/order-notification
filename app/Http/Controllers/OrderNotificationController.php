@@ -13,6 +13,7 @@ class OrderNotificationController extends Controller
         Log::info('---- START Order Notification Received From GEMIVO:', [$request->getContent()]);
         Log::info('Raw Input: ' . file_get_contents('php://input'));
         Log::info('Content-Type:', [$request->header('Content-Type')]);
+        Log::info('Hook Info:', [env('DISCORD_WEBHOOK_URL')]);
         Log::info('Full Request:', [$request]);
         if ($request->all() == null) {
             Log::info('Request is empty');
@@ -88,7 +89,7 @@ class OrderNotificationController extends Controller
     private function sendNoti($orderId, $created)
     {
         $webhookUrl = env('DISCORD_WEBHOOK_URL'); // Ensure this is set in your .env file
-    
+
         // Create a message for Discord
         $message = "💰 **New Top-Up Order**:\n";
         $message .= "A new top-up order has been received! 🎉\n";
