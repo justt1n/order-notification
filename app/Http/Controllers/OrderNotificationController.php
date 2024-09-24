@@ -10,32 +10,59 @@ class OrderNotificationController extends Controller
 {
     public function receiveNotification(Request $request): \Illuminate\Http\JsonResponse
     {
-        // Validate the incoming request
-        $validatedData = $request->validate([
-            'order_id' => 'required|string',
-            'created' => 'required|string',
-            'products_sold' => 'required|array',
-            'products_sold.*.product_id' => 'required|integer',
-            'products_sold.*.product_name' => 'required|string',
-            'products_sold.*.quantity' => 'required|integer',
-            'products_sold.*.user_data' => 'required|array',
-            'products_sold.*.key_ids_sold' => 'required|array',
-            'products_sold.*.key_ids_sold.*' => 'required|integer',
-        ]);
+        // Initialize fields with default values
+        $orderId = '';
+        $created = '';
+        $productsSold = [];
+
+        // Check if the request contains values for the fields and update them
+        if ($request->has('order_id')) {
+            $orderId = $request->input('order_id');
+        }
+        if ($request->has('created')) {
+            $created = $request->input('created');
+        }
+        if ($request->has('products_sold')) {
+            $productsSold = $request->input('products_sold');
+        }
 
         // Log the received order notification for debugging purposes
-        Log::info('Order Notification Received', $validatedData);
+        Log::info('Order Notification Received', ['order_id' => $orderId, 'created' => $created, 'products_sold' => $productsSold]);
 
         // Process the data (for example, send it to Discord)
-        foreach ($validatedData['products_sold'] as $product) {
+        foreach ($productsSold as $product) {
+            // Initialize product fields with default values
+            $productId = 0;
+            $productName = '';
+            $quantity = 0;
+            $userData = [];
+            $keyIds = [];
+
+            // Check if the product contains values for the fields and update them
+            if (isset($product['product_id'])) {
+                $productId = $product['product_id'];
+            }
+            if (isset($product['product_name'])) {
+                $productName = $product['product_name'];
+            }
+            if (isset($product['quantity'])) {
+                $quantity = $product['quantity'];
+            }
+            if (isset($product['user_data'])) {
+                $userData = $product['user_data'];
+            }
+            if (isset($product['key_ids_sold'])) {
+                $keyIds = $product['key_ids_sold'];
+            }
+
             $this->sendToDiscord(
-                $validatedData['order_id'],
-                $validatedData['created'],
-                $product['product_id'],
-                $product['product_name'],
-                $product['quantity'],
-                $product['user_data'],
-                $product['key_ids_sold']
+                $orderId,
+                $created,
+                $productId,
+                $productName,
+                $quantity,
+                $userData,
+                $keyIds
             );
         }
 
