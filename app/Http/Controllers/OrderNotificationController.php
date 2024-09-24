@@ -13,6 +13,7 @@ class OrderNotificationController extends Controller
         Log::info('---- START Order Notification Received From GEMIVO:', [$request->getContent()]);
         Log::info('Raw Input: ' . file_get_contents('php://input'));
         Log::info('Content-Type:', [$request->header('Content-Type')]);
+        Log::info('Full Request:', [$request]);
         if ($request->all() == null) {
             Log::info('Request is empty');
             //get current time
