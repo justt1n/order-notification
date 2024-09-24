@@ -10,7 +10,8 @@ class OrderNotificationController extends Controller
 {
     public function receiveNotification(Request $request): \Illuminate\Http\JsonResponse
     {
-        Log::info('Order Notification Received From GEMIVO:', [$request->getContent()]);
+        Log::info('---- START Order Notification Received From GEMIVO:', [$request->getContent()]);
+        Log::info('Raw Input: ' . file_get_contents('php://input'));
         Log::info('Content-Type:', [$request->header('Content-Type')]);
         if ($request->all() == null) {
             Log::info('Request is empty');
@@ -37,7 +38,7 @@ class OrderNotificationController extends Controller
                 $this->sendNoti($orderId, $created);
             }
         }
-        Log::info('END Order Notification Received From GEMIVO:', [$orderId, $created, $productsSold]);
+        Log::info('-----END Order Notification Received From GEMIVO:', [$orderId, $created, $productsSold]);
         // Log the received order notification for debugging purposes
         Log::info('Order Notification Received', ['order_id' => $orderId, 'created' => $created, 'products_sold' => $productsSold]);
 
